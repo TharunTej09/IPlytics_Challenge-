@@ -1,0 +1,66 @@
+USE tarun_project;
+SELECT * FROM declarations;
+SELECT * FROM patents;
+
+
+-- select year(publication_date) from patents
+
+-- this query will give applicant with max no of patents for each year
+SELECT max(applicant), year(publication_date)
+FROM patents
+GROUP BY year(publication_date);
+
+-- this query will give top 3 or last 3 highest or lowest patent count with resp. year
+SELECT count(*) as ct, year(publication_date)
+FROM patents
+GROUP BY year(publication_date)
+order by ct desc 
+limit 3;
+
+-- Fetching the results of apllicants for particular Year
+SELECT applicant, publication_date FROM patents WHERE year(publication_date)='2012';
+
+-- Fetching the applicant from the publication date
+SELECT year(publication_date), applicant FROM patents WHERE applicant='Apple Inc.';
+
+-- Results of the Status False of publication_nr, inpadoc_family_id
+SELECT publication_nr FROM
+patents WHERE lapsed=FALSE;
+
+-- Getting the Family size of the inpadoc
+SELECT inpadoc_family_id FROM
+patents WHERE family_size<=2;
+
+-- geting the market coverage 
+SELECT applicant FROM
+patents WHERE market_coverage>1.5;
+
+-- this give the highest declarations as per the years 
+SELECT count(*) as c, year(declaration_date)
+FROM declarations
+GROUP BY year(declaration_date)
+order by c desc 
+limit 3;
+
+-- we could find the maximum companies declaring per year
+SELECT count(*) as c, max(declaring_company), year(declaration_date)
+FROM declarations
+GROUP BY year(declaration_date)
+order by c desc;
+
+
+-- Looking out for common in all three tables--
+SELECT * FROM declarations INNER JOIN patents 
+	ON declarations.publication_nr = patents.publication_nr 
+    INNER JOIN standards 
+    ON 
+    declarations.standard_document_id= standards.standard_document_id;
+       
+   
+-- Indentifying values which are not present
+SELECT *
+FROM 
+	declarations 
+WHERE
+    declarations.standard_document_id NOT IN
+ ( SELECT standards.standard_document_id FROM standards);
